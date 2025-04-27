@@ -5,26 +5,21 @@
 #include <string>
 #include "State.h"
 #include "Weapon.h"
-#include <random>
 
-class Manager;
+class GameManager;
 
 class Character
 {
 protected:
 	int health;
 	std::unique_ptr<State> state;
+	std::unique_ptr<Weapon> weapon;
 	double attackProbability;
 	double dodgeProbability;
 	std::string characterName;
 
-	// Random number generator
-	std::random_device rd;
-	std::mt19937 gen;
-	std::uniform_real_distribution<> dis;
-
 public:
-	explicit Character(int initialHealth, double attackProb, double dodgeProb, const std::string& name);
+	explicit Character(int initialHealth, double attackProb, double dodgeProb, const std::string& name, std::unique_ptr<Weapon> weapon);
 	virtual ~Character() = default;
 
 	virtual void Attack(Character& target) const = 0;
@@ -34,27 +29,19 @@ public:
 	double GetDodgeProbability() const;
 	const std::string& GetName() const;
 	void Update();
-	void ChangeState(std::unique_ptr<State> newState);
-	State* GetState() const;
 };
 
 class Huntress : public Character
 {
-private:
-	std::unique_ptr<Weapon> weapon;
-
 public:
-	Huntress();
+	Huntress(std::unique_ptr<Weapon> weapon);
 	void Attack(Character& target) const override;
 };
 
 class Mercenary : public Character
 {
-private:
-	std::unique_ptr<Weapon> weapon;
-
 public:
-	Mercenary();
+	Mercenary(std::unique_ptr<Weapon> weapon);
 	void Attack(Character& target) const override;
 };
 

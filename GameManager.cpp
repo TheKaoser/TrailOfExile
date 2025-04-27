@@ -1,22 +1,22 @@
-#include "Manager.h"
+#include "GameManager.h"
 #include "Character.h"
 #include <iostream>
 #include <thread>
 
-Manager::Manager() = default;
+GameManager::GameManager() = default;
 
-Manager* Manager::GetInstance()
+GameManager* GameManager::GetInstance()
 {
-	static Manager instance;
+	static GameManager instance;
 	return &instance;
 }
 
-void Manager::CreateCharacter(std::shared_ptr<Character> character)
+void GameManager::CreateCharacter(std::shared_ptr<Character> character)
 {
 	characters.push_back(character);
 }
 
-void Manager::RunGame()
+void GameManager::RunGame()
 {
 	std::cout << "The following characters are fighting:" << std::endl;
 	for (const auto& character : characters)
@@ -34,7 +34,7 @@ void Manager::RunGame()
 	} while (!GetWinner());
 }
 
-void Manager::Update()
+void GameManager::Update()
 {
 	if (characters.size() < 2)
 	{
@@ -51,14 +51,21 @@ void Manager::Update()
 	{
 		character->Update();
 	}
-	CleanCharacters();
+	CheckDefeatedCharacters();
 
 	std::this_thread::sleep_for(std::chrono::seconds(2));
 }
 
-Character* Manager::GetOpponent(Character* character) const
+Character* GameManager::GetOpponent(const Character* character) const
 {
-	auto it = opponents.find(character);
+	// Recalculate opponents if needed
+	if (opponentsNeedUpdate)
+	{
+		RecalculateOpponents();
+		opponentsNeedUpdate = false;
+	}
+
+	auto it = opponents.find(const_cast<Character*>(character));
 	if (it != opponents.end())
 	{
 		return it->second;
@@ -66,7 +73,17 @@ Character* Manager::GetOpponent(Character* character) const
 	return nullptr;
 }
 
-void Manager::CleanCharacters()
+void GameManager::RecalculateOpponents() const
+{
+	opponents.clear(); // Clear the existing map
+	for (size_t i = 0; i < characters.size(); ++i)
+	{
+		size_t targetIndex = (i + 1) % characters.size();
+		opponents[characters[i].get()] = characters[targetIndex].get();
+	}
+}
+
+void GameManager::CheckDefeatedCharacters()
 {
 	characters.erase(
 		std::remove_if(
@@ -77,6 +94,7 @@ void Manager::CleanCharacters()
 				if (character->GetHealth() <= 0)
 				{
 					std::cout << character->GetName() << " has been defeated and is removed from the game." << std::endl;
+					opponentsNeedUpdate = true;
 					return true; // Mark for removal
 				}
 				return false; // Keep in the list
@@ -84,11 +102,17 @@ void Manager::CleanCharacters()
 		characters.end());
 }
 
-std::shared_ptr<Character> Manager::GetWinner() const
+std::shared_ptr<Character> GameManager::GetWinner() const
 {
 	if (characters.size() == 1)
 	{
 		return characters.front();
 	}
 	return nullptr; // No winner
+}
+
+double GameManager::GetRandomDouble(double min, double max)
+{
+	std::uniform_real_distribution<> customDis(min, max);
+	return customDis(gen);
 }

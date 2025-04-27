@@ -16,8 +16,8 @@ public:
 	explicit State(int durationTicks);
 	virtual ~State() = default;
 
+	virtual std::unique_ptr<State> GetNextState(Character& character, double randomValue) = 0;
 	virtual void Enter(Character& character) {};
-	virtual void HandleInput(Character& character, double randomValue) = 0;
 	virtual void Update(Character& character);
 	bool IsFinished() const;
 };
@@ -26,7 +26,7 @@ class IdleState : public State
 {
 public:
 	IdleState();
-	void HandleInput(Character& character, double randomValue) override;
+	std::unique_ptr<State> GetNextState(Character& character, double randomValue) override;
 	void Update(Character& character) override;
 };
 
@@ -34,15 +34,15 @@ class DodgingState : public State
 {
 public:
 	DodgingState();
-	void HandleInput(Character& character, double randomValue) override;
+	std::unique_ptr<State> GetNextState(Character& character, double randomValue) override;
 };
 
 class AttackingState : public State
 {
 public:
 	AttackingState();
+	std::unique_ptr<State> GetNextState(Character& character, double randomValue) override;
 	void Enter(Character& character) override;
-	void HandleInput(Character& character, double randomValue) override;
 };
 
 #endif // STATE_H

@@ -1,10 +1,10 @@
 #include "Character.h"
-#include "Manager.h"
+#include "GameManager.h"
 #include <iostream>
 
-Character::Character(int initialHealth, double attackProb, double dodgeProb, const std::string& name)
+Character::Character(int initialHealth, double attackProb, double dodgeProb, const std::string& name, std::unique_ptr<Weapon> weapon)
 	: health(initialHealth), attackProbability(attackProb), dodgeProbability(dodgeProb),
-	characterName(name), gen(rd()), dis(0.0, 1.0)
+	characterName(name), weapon(std::move(weapon))
 {
 	state = std::make_unique<IdleState>();
 	state->Enter(*this);
@@ -45,38 +45,32 @@ const std::string& Character::GetName() const
 
 void Character::Update()
 {
-	double randomValue = dis(gen);
-	state->HandleInput(*this, randomValue);
+	double randomValue = GameManager::GetInstance()->GetRandomDouble(0.0, 1.0);
+	std::unique_ptr<State> nextState = state->GetNextState(*this, randomValue);
+	if (nextState)
+	{
+		state = std::move(nextState);
+		state->Enter(*this);
+	}
 	state->Update(*this);
 }
 
-void Character::ChangeState(std::unique_ptr<State> newState)
-{
-	state = std::move(newState);
-	state->Enter(*this);
-}
-
-State* Character::GetState() const
-{
-	return state.get();
-}
-
-Huntress::Huntress() : Character(100, 0.5, 0.3, "Huntress"), weapon(std::make_unique<Spear>()) {}
+Huntress::Huntress(std::unique_ptr<Weapon> weapon) : Character(100, 0.5, 0.3, "Huntress", std::move(weapon)) {}
 
 void Huntress::Attack(Character& target) const
 {
-	Character* opponent = Manager::GetInstance()->GetOpponent(const_cast<Huntress*>(this));
+	Character* opponent = GameManager::GetInstance()->GetOpponent(this);
 	if (opponent)
 	{
 		weapon->Attack(characterName, opponent);
 	}
 }
 
-Mercenary::Mercenary() : Character(120, 0.2, 0, "Mercenary"), weapon(std::make_unique<Crossbow>()) {}
+Mercenary::Mercenary(std::unique_ptr<Weapon> weapon) : Character(120, 0.2, 0, "Mercenary", std::move(weapon)) {}
 
 void Mercenary::Attack(Character& target) const
 {
-	Character* opponent = Manager::GetInstance()->GetOpponent(const_cast<Mercenary*>(this));
+	Character* opponent = GameManager::GetInstance()->GetOpponent(this);
 	if (opponent)
 	{
 		weapon->Attack(characterName, opponent);
