@@ -15,6 +15,8 @@ Timed Update: The Manager’s Update method handles periodic global logic.
 
 Polymorphism: Characters and weapons extend shared base classes, allowing flexible and scalable behavior.
 
+Observer Pattern: The logger is suscribed to the characters to log their behaviours.
+
 <br><br>
 
 🔍 Focus
