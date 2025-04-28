@@ -20,6 +20,7 @@ public:
 	virtual void Enter(Character& character) {};
 	virtual void Update(Character& character);
 	bool IsFinished() const;
+	virtual bool ResistsDamage() const { return false; }
 };
 
 class IdleState : public State
@@ -27,7 +28,6 @@ class IdleState : public State
 public:
 	IdleState();
 	std::unique_ptr<State> GetNextState(Character& character, double randomValue) override;
-	void Update(Character& character) override;
 };
 
 class DodgingState : public State
@@ -35,6 +35,7 @@ class DodgingState : public State
 public:
 	DodgingState();
 	std::unique_ptr<State> GetNextState(Character& character, double randomValue) override;
+	bool ResistsDamage() const override { return true; }
 };
 
 class AttackingState : public State

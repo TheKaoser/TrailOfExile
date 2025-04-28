@@ -3,7 +3,7 @@
 #include <iostream>
 #include <thread>
 
-GameManager::GameManager() = default;
+GameManager::GameManager() : opponentsNeedUpdate(false), gen(std::random_device{}()), dis(0.0, 1.0) {}
 
 GameManager* GameManager::GetInstance()
 {
@@ -23,7 +23,6 @@ void GameManager::RunGame()
 	{
 		std::cout << "- " << character->GetName() << " with " << character->GetHealth() << " health." << std::endl;
 	}
-
 	std::cout << "Let the combat begin!" << std::endl;
 	std::cout << "---------------------\n" << std::endl;
 
@@ -53,12 +52,11 @@ void GameManager::Update()
 	}
 	CheckDefeatedCharacters();
 
-	std::this_thread::sleep_for(std::chrono::seconds(2));
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 }
 
 Character* GameManager::GetOpponent(const Character* character) const
 {
-	// Recalculate opponents if needed
 	if (opponentsNeedUpdate)
 	{
 		RecalculateOpponents();
@@ -93,7 +91,6 @@ void GameManager::CheckDefeatedCharacters()
 			{
 				if (character->GetHealth() <= 0)
 				{
-					std::cout << character->GetName() << " has been defeated and is removed from the game." << std::endl;
 					opponentsNeedUpdate = true;
 					return true; // Mark for removal
 				}

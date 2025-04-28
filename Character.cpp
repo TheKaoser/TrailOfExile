@@ -10,17 +10,43 @@ Character::Character(int initialHealth, double attackProb, double dodgeProb, con
 	state->Enter(*this);
 }
 
+void Character::NotifyObservers(Event event, std::optional<int> value) const
+{
+	for (Observer* observer : observers)
+	{
+		observer->OnNotify(event, characterName, value);
+	}
+}
+
+void Character::AddObserver(Observer* observer)
+{
+	if (std::find(observers.begin(), observers.end(), observer) == observers.end())
+	{
+		observers.push_back(observer);
+	}
+}
+
+void Character::RemoveObserver(Observer* observer)
+{
+	observers.erase(std::remove(observers.begin(), observers.end(), observer), observers.end());
+}
+
 void Character::TakeDamage(int damage)
 {
-	if (dynamic_cast<DodgingState*>(state.get()))
+	if (state->ResistsDamage())
 	{
-		std::cout << characterName << " dodged the attack and took no damage!" << std::endl;
+		NotifyObservers(Event::Dodge);
 		return;
 	}
 
 	health -= damage;
 	if (health < 0) health = 0;
-	std::cout << characterName << " took " << damage << " damage. Remaining health: " << health << std::endl;
+	NotifyObservers(Event::TakeDamage, health);
+
+	if (health == 0)
+	{
+		NotifyObservers(Event::Die);
+	}
 }
 
 int Character::GetHealth() const
@@ -55,24 +81,17 @@ void Character::Update()
 	state->Update(*this);
 }
 
-Huntress::Huntress(std::unique_ptr<Weapon> weapon) : Character(100, 0.5, 0.3, "Huntress", std::move(weapon)) {}
-
-void Huntress::Attack(Character& target) const
+void Character::Attack() const
 {
 	Character* opponent = GameManager::GetInstance()->GetOpponent(this);
 	if (opponent)
 	{
+		int damage = weapon->GetDamage();
+		NotifyObservers(Event::Attack, damage);
 		weapon->Attack(characterName, opponent);
 	}
 }
+
+Huntress::Huntress(std::unique_ptr<Weapon> weapon) : Character(100, 0.5, 0.4, "Huntress", std::move(weapon)) {}
 
 Mercenary::Mercenary(std::unique_ptr<Weapon> weapon) : Character(120, 0.2, 0, "Mercenary", std::move(weapon)) {}
-
-void Mercenary::Attack(Character& target) const
-{
-	Character* opponent = GameManager::GetInstance()->GetOpponent(this);
-	if (opponent)
-	{
-		weapon->Attack(characterName, opponent);
-	}
-}

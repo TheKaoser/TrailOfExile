@@ -16,11 +16,6 @@ bool State::IsFinished() const
 
 IdleState::IdleState() : State(0) {}
 
-void IdleState::Update(Character& character)
-{
-	std::cout << character.GetName() << " does nothing." << std::endl;
-}
-
 std::unique_ptr<State> IdleState::GetNextState(Character& character, double randomValue)
 {
 	if (randomValue < character.GetAttackProbability())
@@ -29,7 +24,6 @@ std::unique_ptr<State> IdleState::GetNextState(Character& character, double rand
 	}
 	else if (randomValue < character.GetAttackProbability() + character.GetDodgeProbability())
 	{
-		std::cout << character.GetName() << " is dodging." << std::endl;
 		return std::make_unique<DodgingState>();
 	}
 	return nullptr;
@@ -44,14 +38,13 @@ std::unique_ptr<State> DodgingState::GetNextState(Character& character, double r
 		return std::make_unique<IdleState>();
 	}
 	return nullptr;
-
 }
 
 AttackingState::AttackingState() : State(2) {}
 
 void AttackingState::Enter(Character& character)
 {
-	character.Attack(character);
+	character.Attack();
 }
 
 std::unique_ptr<State> AttackingState::GetNextState(Character& character, double randomValue)
@@ -62,7 +55,6 @@ std::unique_ptr<State> AttackingState::GetNextState(Character& character, double
 	}
 	else if (randomValue < character.GetDodgeProbability())
 	{
-		std::cout << character.GetName() << " canceled the attacking animation and is dodging." << std::endl;
 		return std::make_unique<DodgingState>();
 	}
 	return nullptr;

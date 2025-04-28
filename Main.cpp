@@ -1,4 +1,5 @@
 #include "GameManager.h"
+#include "Logger.h"
 #include "Character.h"
 #include <iostream>
 
@@ -7,9 +8,13 @@ int main()
 	try
 	{
 		GameManager* GameManager = GameManager::GetInstance();
+		Logger logger;
 
 		auto huntress = std::make_shared<Huntress>(std::make_unique<Spear>());
 		auto mercenary = std::make_shared<Mercenary>(std::make_unique<Crossbow>());
+
+		huntress->AddObserver(&logger);
+		mercenary->AddObserver(&logger);
 
 		GameManager->CreateCharacter(huntress);
 		GameManager->CreateCharacter(mercenary);

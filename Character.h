@@ -3,8 +3,11 @@
 
 #include <memory>
 #include <string>
+#include <vector>  
+#include <optional>
 #include "State.h"
 #include "Weapon.h"
+#include "Observer.h"
 
 class GameManager;
 
@@ -18,31 +21,35 @@ protected:
 	double dodgeProbability;
 	std::string characterName;
 
+	std::vector<Observer*> observers;
+	void NotifyObservers(Event event, std::optional<int> value = std::nullopt) const;
+
 public:
 	explicit Character(int initialHealth, double attackProb, double dodgeProb, const std::string& name, std::unique_ptr<Weapon> weapon);
 	virtual ~Character() = default;
 
-	virtual void Attack(Character& target) const = 0;
+	virtual void Attack() const;
 	void TakeDamage(int damage);
 	int GetHealth() const;
 	double GetAttackProbability() const;
 	double GetDodgeProbability() const;
 	const std::string& GetName() const;
 	void Update();
+
+	void AddObserver(Observer* observer);
+	void RemoveObserver(Observer* observer);
 };
 
 class Huntress : public Character
 {
 public:
 	Huntress(std::unique_ptr<Weapon> weapon);
-	void Attack(Character& target) const override;
 };
 
 class Mercenary : public Character
 {
 public:
 	Mercenary(std::unique_ptr<Weapon> weapon);
-	void Attack(Character& target) const override;
 };
 
 #endif // CHARACTER_H

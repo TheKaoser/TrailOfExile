@@ -15,7 +15,6 @@ void Crossbow::Attack(const std::string& attackerName, Character* target) const
 {
 	if (target)
 	{
-		std::cout << attackerName << " attacks " << target->GetName() << " with Crossbow for " << damage << " damage." << std::endl;
 		target->TakeDamage(damage);
 	}
 }
@@ -26,7 +25,6 @@ void Spear::Attack(const std::string& attackerName, Character* target) const
 {
 	if (target)
 	{
-		std::cout << attackerName << " attacks " << target->GetName() << " with Spear for " << damage << " damage." << std::endl;
 		target->TakeDamage(damage);
 	}
 }
