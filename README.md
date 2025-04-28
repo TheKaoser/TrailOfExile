@@ -1,22 +1,28 @@
 # Trail of Exile
-Trail of Exile is a small simulation project where characters fight against others. It was created to showcase clean code, solid architecture, and good use of design patterns in game development.
+Trail of Exile is a project where two or more characters, each from a selected class with a specific weapon and stats like attack probability and dodge probability, compete to be the last one standing in the arena. It was created to showcase clean code, solid architecture, efficient data handling through caching, and strong use of object-oriented programming principles like polymorphism.
+
 <br><br>
 
 🛠 Key Features & Patterns
 
-Singleton: Used for the Manager to ensure only one instance manages the game.
+Singleton Pattern: Ensures only one Manager instance controls the game flow.
 
 Component Pattern: Weapons are modular components attached to characters.
 
-Timed Update: The Manager has an Update method that runs to handle global logic.
+State Pattern: Characters use a state machine for clean and modular behavior management.
 
-State Pattern: Characters use a state machine for clean and modular behavior control.
+Timed Update: The Manager’s Update method handles periodic global logic.
+
+Polymorphism: Characters and weapons extend shared base classes, allowing flexible and scalable behavior.
+
 <br><br>
 
 🔍 Focus
 
-Extensibility: Easy to add new characters, weapons, or states.
+Extensibility: New characters, weapons, or behavior states can be added easily.
 
-Modularity: Systems are cleanly separated (combat, state, management).
+Modularity: Clear separation of combat, state handling, and game management systems.
 
-Best Practices: Clear code structure, clean architecture, and common patterns.
+Efficiency: Cached frequently accessed data to reduce redundant calculations and improve performance.
+
+Best Practices: Emphasis on clean code, maintainable structure, and common design patterns.
