@@ -1,9 +1,9 @@
 # Trail of Exile
 Trail of Exile is a project where two or more characters, each from a selected class with a specific weapon and stats like attack probability and dodge probability, compete to be the last one standing in the arena. It was created to showcase clean code, solid architecture, efficient data handling through caching, and strong use of object-oriented programming principles like polymorphism.
 
-<br><br>
+<br>
 
-🛠 Key Features & Patterns
+**Key Features & Patterns**
 
 Singleton Pattern: Ensures only one Manager instance controls the game flow.
 
@@ -17,9 +17,9 @@ Polymorphism: Characters and weapons extend shared base classes, allowing flexib
 
 Observer Pattern: The logger is suscribed to the characters to log their behaviours.
 
-<br><br>
+<br>
 
-🔍 Focus
+**Focus**
 
 Extensibility: New characters, weapons, or behavior states can be added easily.
 
