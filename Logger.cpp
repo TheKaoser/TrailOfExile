@@ -15,7 +15,7 @@ void Logger::OnNotify(Event event, const std::string& context, std::optional<int
         std::cout << "  [COMBAT] " << context << ": Dodged " << detail << ".\n";
         break;
     case Event::Attack:
-        std::cout << "  [COMBAT] " << context << ": Attacked " << detail << " for " << value.value_or(0) << " damage.\n";
+        std::cout << "  [COMBAT] " << context << ": " << detail << " for " << value.value_or(0) << " damage.\n";
         break;
     case Event::Die:
         std::cout << "  [DEATH]  " << context << ": Has been defeated.\n";

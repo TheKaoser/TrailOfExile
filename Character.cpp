@@ -5,7 +5,6 @@ Character::Character(int initialHealth, double attackProb, double dodgeProb, con
 	characterName(name), weapon(std::move(weapon))
 {
 	state = std::make_unique<IdleState>();
-	state->Enter(*this);
 }
 
 void Character::NotifyObservers(Event event, std::optional<int> value, const std::string& detail) const
@@ -30,10 +29,10 @@ void Character::RemoveObserver(Observer* observer)
 	observers.erase(std::remove(observers.begin(), observers.end(), observer), observers.end());
 }
 
-void Character::TakeDamage(int damage)
+void Character::TakeDamage(int damage, bool piercing)
 {
-	// The current state decides whether damage is absorbed (e.g. dodging).
-	if (state->ResistsDamage())
+	// Piercing attacks bypass dodge entirely.
+	if (!piercing && state->ResistsDamage())
 	{
 		NotifyObservers(Event::Dodge, std::nullopt, "an attack");
 		return;
@@ -68,10 +67,15 @@ const std::string& Character::GetName() const noexcept
 	return characterName;
 }
 
-// Called once per tick by the GameManager. The random value drives the
-// state-machine transition so that randomness is injected from outside.
-void Character::Update(double randomValue, Character* opponent)
+// Called once per tick by the GameManager. The RNG is stored temporarily so
+// that Attack() can draw damage rolls without threading it through State.
+void Character::Update(std::mt19937& rng, Character* opponent)
 {
+	activeRng = &rng;
+
+	std::uniform_real_distribution<> dist(0.0, 1.0);
+	double randomValue = dist(rng);
+
 	std::unique_ptr<State> nextState = state->GetNextState(*this, randomValue);
 	if (nextState)
 	{
@@ -84,20 +88,30 @@ void Character::Update(double randomValue, Character* opponent)
 		}
 	}
 	state->Update(*this);
+
+	activeRng = nullptr;
 }
 
 void Character::Attack(Character* opponent) const
 {
-	if (opponent)
+	if (opponent && activeRng)
 	{
-		int damage = weapon->GetDamage();
-		NotifyObservers(Event::Attack, damage, opponent->GetName());
-		weapon->Attack(opponent);
+		auto result = weapon->ComputeAttack(*activeRng);
+
+		// Build a descriptive string for the log.
+		std::string desc;
+		if (result.critical)       desc = "Critical strike on ";
+		else if (result.piercing)  desc = "Piercing shot on ";
+		else                       desc = "Attacked ";
+		desc += opponent->GetName();
+
+		NotifyObservers(Event::Attack, result.damage, desc);
+		opponent->TakeDamage(result.damage, result.piercing);
 	}
 }
 
-// Huntress — 100 hp, 50% attack, 40% dodge
-Huntress::Huntress(std::unique_ptr<Weapon> weapon) : Character(100, 0.5, 0.4, "Huntress", std::move(weapon)) {}
+Huntress::Huntress(int hp, double atkProb, double dodgeProb, std::unique_ptr<Weapon> weapon)
+	: Character(hp, atkProb, dodgeProb, "Huntress", std::move(weapon)) {}
 
-// Mercenary — 120 hp, 20% attack, 0% dodge
-Mercenary::Mercenary(std::unique_ptr<Weapon> weapon) : Character(120, 0.2, 0, "Mercenary", std::move(weapon)) {}
+Mercenary::Mercenary(int hp, double atkProb, double dodgeProb, std::unique_ptr<Weapon> weapon)
+	: Character(hp, atkProb, dodgeProb, "Mercenary", std::move(weapon)) {}

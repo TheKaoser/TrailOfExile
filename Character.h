@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <random>
 #include <string>
 #include <vector>
 #include <optional>
@@ -22,6 +23,10 @@ protected:
 	double dodgeProbability;
 	std::string characterName;
 
+	// Set during Update() so Attack() can draw random values without
+	// threading the RNG parameter through the entire State hierarchy.
+	std::mt19937* activeRng = nullptr;
+
 	std::vector<Observer*> observers;
 	void NotifyObservers(Event event, std::optional<int> value = std::nullopt, const std::string& detail = "") const;
 
@@ -30,12 +35,12 @@ public:
 	virtual ~Character() = default;
 
 	virtual void Attack(Character* opponent) const;
-	void TakeDamage(int damage);
+	void TakeDamage(int damage, bool piercing = false);
 	int GetHealth() const noexcept;
 	double GetAttackProbability() const noexcept;
 	double GetDodgeProbability() const noexcept;
 	const std::string& GetName() const noexcept;
-	void Update(double randomValue, Character* opponent);
+	void Update(std::mt19937& rng, Character* opponent);
 
 	void AddObserver(Observer* observer);
 	void RemoveObserver(Observer* observer);
@@ -45,12 +50,12 @@ public:
 class Huntress : public Character
 {
 public:
-	explicit Huntress(std::unique_ptr<Weapon> weapon);
+	Huntress(int hp, double atkProb, double dodgeProb, std::unique_ptr<Weapon> weapon);
 };
 
 // Tanky class — large health pool, slower attacks, cannot dodge.
 class Mercenary : public Character
 {
 public:
-	explicit Mercenary(std::unique_ptr<Weapon> weapon);
+	Mercenary(int hp, double atkProb, double dodgeProb, std::unique_ptr<Weapon> weapon);
 };

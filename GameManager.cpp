@@ -63,8 +63,7 @@ void GameManager::Update(int tick)
 
 		size_t targetIndex = (i + 1) % characters.size();
 		Character* opponent = characters[targetIndex].get();
-		double randomValue = GetRandomDouble(0.0, 1.0);
-		characters[i]->Update(randomValue, opponent);
+		characters[i]->Update(gen, opponent);
 	}
 
 	CheckDefeatedCharacters();
