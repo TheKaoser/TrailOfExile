@@ -32,15 +32,28 @@ void GameManager::RunGame()
 	std::cout << "Let the combat begin!\n";
 	std::cout << "---------------------\n\n";
 
+	int tick = 1;
 	do
 	{
-		Update();
+		std::cout << "--- Tick " << tick << " ---\n";
+		Update(tick);
 		std::cout << '\n';
+		++tick;
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	} while (!IsGameOver());
+
+	auto winner = GetWinner();
+	if (winner)
+	{
+		std::cout << winner->GetName() << " wins with " << winner->GetHealth() << " health remaining!\n";
+	}
+	else
+	{
+		std::cout << "No winner could be determined.\n";
+	}
 }
 
-void GameManager::Update()
+void GameManager::Update(int tick)
 {
 	// Each character targets the next one in the list (wraps around).
 	// Skip characters that were knocked out earlier this tick.

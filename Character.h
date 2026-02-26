@@ -23,7 +23,7 @@ protected:
 	std::string characterName;
 
 	std::vector<Observer*> observers;
-	void NotifyObservers(Event event, std::optional<int> value = std::nullopt) const;
+	void NotifyObservers(Event event, std::optional<int> value = std::nullopt, const std::string& detail = "") const;
 
 public:
 	Character(int initialHealth, double attackProb, double dodgeProb, const std::string& name, std::unique_ptr<Weapon> weapon);

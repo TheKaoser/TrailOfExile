@@ -10,5 +10,5 @@ class Observer
 public:
     virtual ~Observer() = default;
 
-    virtual void OnNotify(Event event, const std::string& context, std::optional<int> value) = 0;
+    virtual void OnNotify(Event event, const std::string& context, std::optional<int> value, const std::string& detail) = 0;
 };

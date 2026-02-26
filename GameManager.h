@@ -24,7 +24,7 @@ public:
 	static GameManager& GetInstance();
 	void CreateCharacter(std::shared_ptr<Character> character);
 	void RunGame();
-	void Update();
+	void Update(int tick);
 	bool IsGameOver() const noexcept;
 	std::shared_ptr<Character> GetWinner() const noexcept;
 

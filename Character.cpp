@@ -8,11 +8,11 @@ Character::Character(int initialHealth, double attackProb, double dodgeProb, con
 	state->Enter(*this);
 }
 
-void Character::NotifyObservers(Event event, std::optional<int> value) const
+void Character::NotifyObservers(Event event, std::optional<int> value, const std::string& detail) const
 {
 	for (Observer* observer : observers)
 	{
-		observer->OnNotify(event, characterName, value);
+		observer->OnNotify(event, characterName, value, detail);
 	}
 }
 
@@ -35,7 +35,7 @@ void Character::TakeDamage(int damage)
 	// The current state decides whether damage is absorbed (e.g. dodging).
 	if (state->ResistsDamage())
 	{
-		NotifyObservers(Event::Dodge);
+		NotifyObservers(Event::Dodge, std::nullopt, "an attack");
 		return;
 	}
 
@@ -77,7 +77,11 @@ void Character::Update(double randomValue, Character* opponent)
 	{
 		state = std::move(nextState);
 		state->Enter(*this, opponent);
-		NotifyObservers(Event::StateChange);
+		// Idle is the resting state — only log interesting transitions.
+		if (state->GetName() != std::string_view("Idle"))
+		{
+			NotifyObservers(Event::StateChange, std::nullopt, state->GetName());
+		}
 	}
 	state->Update(*this);
 }
@@ -87,7 +91,7 @@ void Character::Attack(Character* opponent) const
 	if (opponent)
 	{
 		int damage = weapon->GetDamage();
-		NotifyObservers(Event::Attack, damage);
+		NotifyObservers(Event::Attack, damage, opponent->GetName());
 		weapon->Attack(opponent);
 	}
 }

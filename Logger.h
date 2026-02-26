@@ -7,5 +7,5 @@
 class Logger : public Observer
 {
 public:
-    void OnNotify(Event event, const std::string& context, std::optional<int> value) override;
+    void OnNotify(Event event, const std::string& context, std::optional<int> value, const std::string& detail) override;
 };

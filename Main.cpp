@@ -23,16 +23,6 @@ int main()
 		gameManager.CreateCharacter(mercenary);
 
 		gameManager.RunGame();
-
-		auto winner = gameManager.GetWinner();
-		if (winner)
-		{
-			std::cout << "The winner is " << winner->GetName() << " with " << winner->GetHealth() << " health remaining!\n";
-		}
-		else
-		{
-			std::cout << "No winner could be determined.\n";
-		}
 	}
 	catch (const std::exception& e)
 	{
