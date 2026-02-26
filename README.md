@@ -1,6 +1,6 @@
 ﻿# Trail of Exile
 
-A tick-based arena combat simulation where three characters - each from a Path of Exile 2 class with a unique weapon and stat spread - fight until only one remains. Built as a portfolio piece to demonstrate clean C++17, data-driven design, and a handful of classic design patterns working together.
+A tick-based arena combat simulation where three characters - each with a unique weapon and stat spread - fight until only one remains. Built to demonstrate clean C++, data-driven design, and a handful of classic design patterns working together.
 
 <br>
 
