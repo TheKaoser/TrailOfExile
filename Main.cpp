@@ -7,7 +7,7 @@ int main()
 {
 	try
 	{
-		GameManager* GameManager = GameManager::GetInstance();
+		GameManager& gameManager = GameManager::GetInstance();
 		Logger logger;
 
 		auto huntress = std::make_shared<Huntress>(std::make_unique<Spear>());
@@ -16,12 +16,12 @@ int main()
 		huntress->AddObserver(&logger);
 		mercenary->AddObserver(&logger);
 
-		GameManager->CreateCharacter(huntress);
-		GameManager->CreateCharacter(mercenary);
+		gameManager.CreateCharacter(huntress);
+		gameManager.CreateCharacter(mercenary);
 
-		GameManager->RunGame();
+		gameManager.RunGame();
 
-		auto winner = GameManager->GetWinner();
+		auto winner = gameManager.GetWinner();
 		if (winner)
 		{
 			std::cout << "The winner is " << winner->GetName() << " with " << winner->GetHealth() << " health remaining!" << std::endl;

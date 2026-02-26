@@ -17,7 +17,7 @@ public:
 	virtual ~State() = default;
 
 	virtual std::unique_ptr<State> GetNextState(Character& character, double randomValue) = 0;
-	virtual void Enter(Character& character) {};
+	virtual void Enter(Character& character, Character* opponent = nullptr) {}
 	virtual void Update(Character& character);
 	bool IsFinished() const;
 	virtual bool ResistsDamage() const { return false; }
@@ -43,7 +43,7 @@ class AttackingState : public State
 public:
 	AttackingState();
 	std::unique_ptr<State> GetNextState(Character& character, double randomValue) override;
-	void Enter(Character& character) override;
+	void Enter(Character& character, Character* opponent) override;
 };
 
 #endif // STATE_H

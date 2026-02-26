@@ -9,8 +9,6 @@
 #include "Weapon.h"
 #include "Observer.h"
 
-class GameManager;
-
 class Character
 {
 protected:
@@ -28,13 +26,13 @@ public:
 	explicit Character(int initialHealth, double attackProb, double dodgeProb, const std::string& name, std::unique_ptr<Weapon> weapon);
 	virtual ~Character() = default;
 
-	virtual void Attack() const;
+	virtual void Attack(Character* opponent) const;
 	void TakeDamage(int damage);
 	int GetHealth() const;
 	double GetAttackProbability() const;
 	double GetDodgeProbability() const;
 	const std::string& GetName() const;
-	void Update();
+	void Update(double randomValue, Character* opponent);
 
 	void AddObserver(Observer* observer);
 	void RemoveObserver(Observer* observer);

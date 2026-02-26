@@ -1,4 +1,5 @@
 #include "Logger.h"
+#include <iostream>
 
 void Logger::OnNotify(Event event, const std::string& context, std::optional<int> value)
 {

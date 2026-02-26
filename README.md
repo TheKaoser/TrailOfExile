@@ -15,7 +15,7 @@ Timed Update: The Manager’s Update method handles periodic global logic.
 
 Polymorphism: Characters and weapons extend shared base classes, allowing flexible and scalable behavior.
 
-Observer Pattern: The logger is suscribed to the characters to log their behaviours.
+Observer Pattern: The logger is subscribed to the characters to log their behaviours.
 
 <br>
 
@@ -25,6 +25,6 @@ Extensibility: New characters, weapons, or behavior states can be added easily.
 
 Modularity: Clear separation of combat, state handling, and game management systems.
 
-Efficiency: Cached frequently accessed data to reduce redundant calculations and improve performance.
+Simplicity: Game state is computed fresh each tick, keeping logic straightforward and predictable.
 
 Best Practices: Emphasis on clean code, maintainable structure, and common design patterns.

@@ -1,8 +1,6 @@
 #ifndef WEAPON_H
 #define WEAPON_H
 
-#include <string>
-
 class Character;
 
 class Weapon
@@ -14,7 +12,7 @@ public:
 	explicit Weapon(int dmg);
 	virtual ~Weapon() = default;
 
-	virtual void Attack(const std::string& attackerName, Character* target) const = 0;
+	virtual void Attack(Character* target) const;
 	int GetDamage() const;
 };
 
@@ -22,14 +20,12 @@ class Crossbow : public Weapon
 {
 public:
 	Crossbow();
-	void Attack(const std::string& attackerName, Character* target) const override;
 };
 
 class Spear : public Weapon
 {
 public:
 	Spear();
-	void Attack(const std::string& attackerName, Character* target) const override;
 };
 
 #endif // WEAPON_H

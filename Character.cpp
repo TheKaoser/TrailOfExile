@@ -1,5 +1,5 @@
 #include "Character.h"
-#include "GameManager.h"
+#include <algorithm>
 #include <iostream>
 
 Character::Character(int initialHealth, double attackProb, double dodgeProb, const std::string& name, std::unique_ptr<Weapon> weapon)
@@ -69,26 +69,25 @@ const std::string& Character::GetName() const
 	return characterName;
 }
 
-void Character::Update()
+void Character::Update(double randomValue, Character* opponent)
 {
-	double randomValue = GameManager::GetInstance()->GetRandomDouble(0.0, 1.0);
 	std::unique_ptr<State> nextState = state->GetNextState(*this, randomValue);
 	if (nextState)
 	{
 		state = std::move(nextState);
-		state->Enter(*this);
+		state->Enter(*this, opponent);
+		NotifyObservers(Event::StateChange);
 	}
 	state->Update(*this);
 }
 
-void Character::Attack() const
+void Character::Attack(Character* opponent) const
 {
-	Character* opponent = GameManager::GetInstance()->GetOpponent(this);
 	if (opponent)
 	{
 		int damage = weapon->GetDamage();
 		NotifyObservers(Event::Attack, damage);
-		weapon->Attack(characterName, opponent);
+		weapon->Attack(opponent);
 	}
 }
 

@@ -42,9 +42,9 @@ std::unique_ptr<State> DodgingState::GetNextState(Character& character, double r
 
 AttackingState::AttackingState() : State(2) {}
 
-void AttackingState::Enter(Character& character)
+void AttackingState::Enter(Character& character, Character* opponent)
 {
-	character.Attack();
+	character.Attack(opponent);
 }
 
 std::unique_ptr<State> AttackingState::GetNextState(Character& character, double randomValue)
