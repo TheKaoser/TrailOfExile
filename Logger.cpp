@@ -6,7 +6,6 @@ void Logger::OnNotify(Event event, const std::string& context, std::optional<int
     switch (event)
     {
     case Event::StateChange:
-        std::cout << "  [STATE]  " << context << ": Entered " << detail << " state.\n";
         break;
     case Event::TakeDamage:
         std::cout << "  [COMBAT] " << context << ": Took damage. Health: " << value.value_or(0) << '\n';

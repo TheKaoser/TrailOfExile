@@ -21,9 +21,16 @@ struct CharacterConfig
 	double dodgeProbability = 0.0;
 };
 
-// Reads an INI-style config file and exposes weapon/character definitions.
-// Keeps game balance data out of the source code so designers can iterate
-// without recompiling.
+struct EnchantmentConfig
+{
+	std::string name;
+	int bonusDamage = 0;
+	double procChance = 0.0; // 0 = always active (e.g. Flaming)
+};
+
+// Reads an INI-style config file and exposes weapon/character/enchantment
+// definitions. Keeps game balance data out of the source code so designers
+// can iterate without recompiling.
 class ConfigLoader
 {
 public:
@@ -31,8 +38,10 @@ public:
 
 	const WeaponConfig& GetWeapon(const std::string& name) const;
 	const CharacterConfig& GetCharacter(const std::string& name) const;
+	const EnchantmentConfig& GetEnchantment(const std::string& name) const;
 
 private:
 	std::unordered_map<std::string, WeaponConfig> weapons;
 	std::unordered_map<std::string, CharacterConfig> characters;
+	std::unordered_map<std::string, EnchantmentConfig> enchantments;
 };

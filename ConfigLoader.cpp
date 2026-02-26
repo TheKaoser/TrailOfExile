@@ -48,6 +48,10 @@ ConfigLoader::ConfigLoader(const std::string& filepath)
 			{
 				characters[sectionName].name = sectionName;
 			}
+			else if (sectionType == "Enchantment")
+			{
+				enchantments[sectionName].name = sectionName;
+			}
 			else
 			{
 				throw std::runtime_error("Unknown section type: " + sectionType);
@@ -78,6 +82,12 @@ ConfigLoader::ConfigLoader(const std::string& filepath)
 			else if (key == "AttackProbability")   c.attackProbability = std::stod(val);
 			else if (key == "DodgeProbability")    c.dodgeProbability = std::stod(val);
 		}
+		else if (sectionType == "Enchantment")
+		{
+			auto& e = enchantments[sectionName];
+			if      (key == "BonusDamage") e.bonusDamage = std::stoi(val);
+			else if (key == "ProcChance")  e.procChance = std::stod(val);
+		}
 	}
 }
 
@@ -97,6 +107,16 @@ const CharacterConfig& ConfigLoader::GetCharacter(const std::string& name) const
 	if (it == characters.end())
 	{
 		throw std::runtime_error("Character not found in config: " + name);
+	}
+	return it->second;
+}
+
+const EnchantmentConfig& ConfigLoader::GetEnchantment(const std::string& name) const
+{
+	auto it = enchantments.find(name);
+	if (it == enchantments.end())
+	{
+		throw std::runtime_error("Enchantment not found in config: " + name);
 	}
 	return it->second;
 }

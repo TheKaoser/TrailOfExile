@@ -42,6 +42,8 @@ public:
 	const std::string& GetName() const noexcept;
 	void Update(std::mt19937& rng, Character* opponent);
 
+	const char* GetWeaponName() const noexcept;
+
 	void AddObserver(Observer* observer);
 	void RemoveObserver(Observer* observer);
 };
@@ -58,4 +60,11 @@ class Mercenary : public Character
 {
 public:
 	Mercenary(int hp, double atkProb, double dodgeProb, std::unique_ptr<Weapon> weapon);
+};
+
+// Glass cannon — low health, high attack frequency, moderate dodge.
+class Witch : public Character
+{
+public:
+	Witch(int hp, double atkProb, double dodgeProb, std::unique_ptr<Weapon> weapon);
 };

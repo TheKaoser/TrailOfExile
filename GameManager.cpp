@@ -27,7 +27,7 @@ void GameManager::RunGame()
 	std::cout << "The following characters are fighting:\n";
 	for (const auto& character : characters)
 	{
-		std::cout << "- " << character->GetName() << " with " << character->GetHealth() << " health.\n";
+		std::cout << "- " << character->GetName() << " (" << character->GetWeaponName() << ") with " << character->GetHealth() << " health.\n";
 	}
 	std::cout << "Let the combat begin!\n";
 	std::cout << "---------------------\n\n";
@@ -97,8 +97,3 @@ std::shared_ptr<Character> GameManager::GetWinner() const noexcept
 	return nullptr;
 }
 
-double GameManager::GetRandomDouble(double min, double max)
-{
-	std::uniform_real_distribution<> dist(min, max);
-	return dist(gen);
-}

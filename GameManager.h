@@ -28,8 +28,6 @@ public:
 	bool IsGameOver() const noexcept;
 	std::shared_ptr<Character> GetWinner() const noexcept;
 
-	double GetRandomDouble(double min = 0.0, double max = 1.0);
-
 private:
 	void CheckDefeatedCharacters();
 };

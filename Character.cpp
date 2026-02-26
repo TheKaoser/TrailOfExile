@@ -81,15 +81,16 @@ void Character::Update(std::mt19937& rng, Character* opponent)
 	{
 		state = std::move(nextState);
 		state->Enter(*this, opponent);
-		// Idle is the resting state — only log interesting transitions.
-		if (state->GetName() != std::string_view("Idle"))
-		{
-			NotifyObservers(Event::StateChange, std::nullopt, state->GetName());
-		}
+		NotifyObservers(Event::StateChange, std::nullopt, state->GetName());
 	}
 	state->Update(*this);
 
 	activeRng = nullptr;
+}
+
+const char* Character::GetWeaponName() const noexcept
+{
+	return weapon->GetName();
 }
 
 void Character::Attack(Character* opponent) const
@@ -105,6 +106,12 @@ void Character::Attack(Character* opponent) const
 		else                       desc = "Attacked ";
 		desc += opponent->GetName();
 
+		// Append any enchantment proc info (e.g. "(venom!)").
+		if (!result.enchantEffect.empty())
+		{
+			desc += " " + result.enchantEffect;
+		}
+
 		NotifyObservers(Event::Attack, result.damage, desc);
 		opponent->TakeDamage(result.damage, result.piercing);
 	}
@@ -115,3 +122,6 @@ Huntress::Huntress(int hp, double atkProb, double dodgeProb, std::unique_ptr<Wea
 
 Mercenary::Mercenary(int hp, double atkProb, double dodgeProb, std::unique_ptr<Weapon> weapon)
 	: Character(hp, atkProb, dodgeProb, "Mercenary", std::move(weapon)) {}
+
+Witch::Witch(int hp, double atkProb, double dodgeProb, std::unique_ptr<Weapon> weapon)
+	: Character(hp, atkProb, dodgeProb, "Witch", std::move(weapon)) {}

@@ -46,3 +46,59 @@ AttackResult Crossbow::ComputeAttack(std::mt19937& rng) const
 	}
 	return result;
 }
+
+// Staff — straightforward magic weapon, meant to be enhanced with enchantments.
+Staff::Staff(int baseDmg, int variance) noexcept
+	: Weapon(baseDmg, variance) {}
+
+// ---------------------------------------------------------------------------
+// Weapon Enchantments (Decorator pattern)
+// ---------------------------------------------------------------------------
+
+WeaponEnchantment::WeaponEnchantment(std::unique_ptr<Weapon> weapon, const std::string& prefix)
+	: Weapon(0, 0), baseWeapon(std::move(weapon))
+{
+	// Build a composite name like "Flaming Staff" or "Venomous Flaming Staff".
+	combinedName = prefix + " " + baseWeapon->GetName();
+}
+
+AttackResult WeaponEnchantment::ComputeAttack(std::mt19937& rng) const
+{
+	return baseWeapon->ComputeAttack(rng);
+}
+
+int WeaponEnchantment::GetBaseDamage() const noexcept
+{
+	return baseWeapon->GetBaseDamage();
+}
+
+// Flaming — adds flat fire damage to every hit.
+FlamingEnchantment::FlamingEnchantment(std::unique_ptr<Weapon> weapon, int bonusDmg)
+	: WeaponEnchantment(std::move(weapon), "Flaming"), bonusDamage(bonusDmg) {}
+
+AttackResult FlamingEnchantment::ComputeAttack(std::mt19937& rng) const
+{
+	auto result = baseWeapon->ComputeAttack(rng);
+	result.damage += bonusDamage;
+	return result;
+}
+
+// Venom — chance to inject bonus poison damage.
+VenomEnchantment::VenomEnchantment(std::unique_ptr<Weapon> weapon, double chance, int bonusDmg)
+	: WeaponEnchantment(std::move(weapon), "Venomous"), procChance(chance), bonusDamage(bonusDmg) {}
+
+AttackResult VenomEnchantment::ComputeAttack(std::mt19937& rng) const
+{
+	auto result = baseWeapon->ComputeAttack(rng);
+
+	std::uniform_real_distribution<> roll(0.0, 1.0);
+	if (roll(rng) < procChance)
+	{
+		result.damage += bonusDamage;
+		if (result.enchantEffect.empty())
+			result.enchantEffect = "(venom!)";
+		else
+			result.enchantEffect += " (venom!)";
+	}
+	return result;
+}
