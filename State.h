@@ -1,11 +1,13 @@
-#ifndef STATE_H
-#define STATE_H
+#pragma once
 
 #include <memory>
 #include <string>
 
 class Character;
 
+// Each state has a tick-based duration. Characters transition between states
+// based on probability rolls (see GetNextState). Override Enter() to fire
+// one-shot logic when the state begins (e.g. dealing damage on attack).
 class State
 {
 protected:
@@ -13,37 +15,39 @@ protected:
 	int elapsedTicks;
 
 public:
-	explicit State(int durationTicks);
+	explicit constexpr State(int durationTicks) noexcept : duration(durationTicks), elapsedTicks(0) {}
 	virtual ~State() = default;
 
 	virtual std::unique_ptr<State> GetNextState(Character& character, double randomValue) = 0;
 	virtual void Enter(Character& character, Character* opponent = nullptr) {}
 	virtual void Update(Character& character);
-	bool IsFinished() const;
-	virtual bool ResistsDamage() const { return false; }
+	bool IsFinished() const noexcept;
+	virtual bool ResistsDamage() const noexcept { return false; }
 };
 
+// Waiting for the next action. Duration is 0, so a transition is picked immediately.
 class IdleState : public State
 {
 public:
-	IdleState();
+	constexpr IdleState() noexcept : State(0) {}
 	std::unique_ptr<State> GetNextState(Character& character, double randomValue) override;
 };
 
+// Actively evading. While in this state, all incoming damage is negated.
 class DodgingState : public State
 {
 public:
-	DodgingState();
+	constexpr DodgingState() noexcept : State(1) {}
 	std::unique_ptr<State> GetNextState(Character& character, double randomValue) override;
-	bool ResistsDamage() const override { return true; }
+	bool ResistsDamage() const noexcept override { return true; }
 };
 
+// Performing an attack. Damage is dealt on Enter(), then the character
+// is locked into the animation for the remaining ticks.
 class AttackingState : public State
 {
 public:
-	AttackingState();
+	constexpr AttackingState() noexcept : State(2) {}
 	std::unique_ptr<State> GetNextState(Character& character, double randomValue) override;
 	void Enter(Character& character, Character* opponent) override;
 };
-
-#endif // STATE_H

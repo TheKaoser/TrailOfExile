@@ -1,21 +1,18 @@
 #include "State.h"
 #include "Character.h"
-#include <iostream>
-
-State::State(int durationTicks) : duration(durationTicks), elapsedTicks(0) {}
 
 void State::Update(Character& character)
 {
 	++elapsedTicks;
 }
 
-bool State::IsFinished() const
+bool State::IsFinished() const noexcept
 {
 	return elapsedTicks >= duration;
 }
 
-IdleState::IdleState() : State(0) {}
-
+// Idle: pick action based on probability bands
+// [0 .. attackProb) -> attack, [attackProb .. attackProb+dodgeProb) -> dodge, else stay idle
 std::unique_ptr<State> IdleState::GetNextState(Character& character, double randomValue)
 {
 	if (randomValue < character.GetAttackProbability())
@@ -29,8 +26,6 @@ std::unique_ptr<State> IdleState::GetNextState(Character& character, double rand
 	return nullptr;
 }
 
-DodgingState::DodgingState() : State(1) {}
-
 std::unique_ptr<State> DodgingState::GetNextState(Character& character, double randomValue)
 {
 	if (IsFinished())
@@ -40,13 +35,12 @@ std::unique_ptr<State> DodgingState::GetNextState(Character& character, double r
 	return nullptr;
 }
 
-AttackingState::AttackingState() : State(2) {}
-
 void AttackingState::Enter(Character& character, Character* opponent)
 {
 	character.Attack(opponent);
 }
 
+// While attacking, the character can still roll a dodge to cancel the remaining wind-down.
 std::unique_ptr<State> AttackingState::GetNextState(Character& character, double randomValue)
 {
 	if (IsFinished())

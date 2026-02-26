@@ -1,6 +1,6 @@
-#ifndef EVENT_H
-#define EVENT_H
+#pragma once
 
+// All events a Character can broadcast to its observers.
 enum class Event
 {
     StateChange,
@@ -9,5 +9,3 @@ enum class Event
     Attack,
     Die
 };
-
-#endif // EVENT_H

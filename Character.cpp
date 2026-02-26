@@ -1,6 +1,4 @@
 #include "Character.h"
-#include <algorithm>
-#include <iostream>
 
 Character::Character(int initialHealth, double attackProb, double dodgeProb, const std::string& name, std::unique_ptr<Weapon> weapon)
 	: health(initialHealth), attackProbability(attackProb), dodgeProbability(dodgeProb),
@@ -18,6 +16,7 @@ void Character::NotifyObservers(Event event, std::optional<int> value) const
 	}
 }
 
+// Prevent duplicate subscriptions — same observer won't be added twice.
 void Character::AddObserver(Observer* observer)
 {
 	if (std::find(observers.begin(), observers.end(), observer) == observers.end())
@@ -33,14 +32,14 @@ void Character::RemoveObserver(Observer* observer)
 
 void Character::TakeDamage(int damage)
 {
+	// The current state decides whether damage is absorbed (e.g. dodging).
 	if (state->ResistsDamage())
 	{
 		NotifyObservers(Event::Dodge);
 		return;
 	}
 
-	health -= damage;
-	if (health < 0) health = 0;
+	health = std::max(0, health - damage);
 	NotifyObservers(Event::TakeDamage, health);
 
 	if (health == 0)
@@ -49,26 +48,28 @@ void Character::TakeDamage(int damage)
 	}
 }
 
-int Character::GetHealth() const
+int Character::GetHealth() const noexcept
 {
 	return health;
 }
 
-double Character::GetAttackProbability() const
+double Character::GetAttackProbability() const noexcept
 {
 	return attackProbability;
 }
 
-double Character::GetDodgeProbability() const
+double Character::GetDodgeProbability() const noexcept
 {
 	return dodgeProbability;
 }
 
-const std::string& Character::GetName() const
+const std::string& Character::GetName() const noexcept
 {
 	return characterName;
 }
 
+// Called once per tick by the GameManager. The random value drives the
+// state-machine transition so that randomness is injected from outside.
 void Character::Update(double randomValue, Character* opponent)
 {
 	std::unique_ptr<State> nextState = state->GetNextState(*this, randomValue);
@@ -91,6 +92,8 @@ void Character::Attack(Character* opponent) const
 	}
 }
 
+// Huntress — 100 hp, 50% attack, 40% dodge
 Huntress::Huntress(std::unique_ptr<Weapon> weapon) : Character(100, 0.5, 0.4, "Huntress", std::move(weapon)) {}
 
+// Mercenary — 120 hp, 20% attack, 0% dodge
 Mercenary::Mercenary(std::unique_ptr<Weapon> weapon) : Character(120, 0.2, 0, "Mercenary", std::move(weapon)) {}

@@ -1,14 +1,17 @@
-#ifndef CHARACTER_H
-#define CHARACTER_H
+#pragma once
 
+#include <algorithm>
 #include <memory>
 #include <string>
-#include <vector>  
+#include <vector>
 #include <optional>
 #include "State.h"
 #include "Weapon.h"
 #include "Observer.h"
 
+// Base class for every combatant. Owns a weapon and a state-machine that
+// drives its behaviour each tick. Observers are notified of every gameplay
+// event so the game logic stays decoupled from presentation.
 class Character
 {
 protected:
@@ -23,31 +26,31 @@ protected:
 	void NotifyObservers(Event event, std::optional<int> value = std::nullopt) const;
 
 public:
-	explicit Character(int initialHealth, double attackProb, double dodgeProb, const std::string& name, std::unique_ptr<Weapon> weapon);
+	Character(int initialHealth, double attackProb, double dodgeProb, const std::string& name, std::unique_ptr<Weapon> weapon);
 	virtual ~Character() = default;
 
 	virtual void Attack(Character* opponent) const;
 	void TakeDamage(int damage);
-	int GetHealth() const;
-	double GetAttackProbability() const;
-	double GetDodgeProbability() const;
-	const std::string& GetName() const;
+	int GetHealth() const noexcept;
+	double GetAttackProbability() const noexcept;
+	double GetDodgeProbability() const noexcept;
+	const std::string& GetName() const noexcept;
 	void Update(double randomValue, Character* opponent);
 
 	void AddObserver(Observer* observer);
 	void RemoveObserver(Observer* observer);
 };
 
+// High agility class — good attack and dodge rates but lower health.
 class Huntress : public Character
 {
 public:
-	Huntress(std::unique_ptr<Weapon> weapon);
+	explicit Huntress(std::unique_ptr<Weapon> weapon);
 };
 
+// Tanky class — large health pool, slower attacks, cannot dodge.
 class Mercenary : public Character
 {
 public:
-	Mercenary(std::unique_ptr<Weapon> weapon);
+	explicit Mercenary(std::unique_ptr<Weapon> weapon);
 };
-
-#endif // CHARACTER_H

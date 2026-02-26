@@ -1,10 +1,10 @@
-#ifndef OBSERVER_H
-#define OBSERVER_H
+#pragma once
 
 #include "Event.h"
 #include <string>
 #include <optional>
 
+// Interface for anything that wants to react to character events (logging, UI, etc.).
 class Observer
 {
 public:
@@ -12,5 +12,3 @@ public:
 
     virtual void OnNotify(Event event, const std::string& context, std::optional<int> value) = 0;
 };
-
-#endif // OBSERVER_H

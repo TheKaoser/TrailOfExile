@@ -30,3 +30,41 @@
 *.exe
 *.out
 *.app
+
+# Linker outputs
+*.pdb
+*.ilk
+*.iobj
+*.ipdb
+*.exp
+
+# Visual Studio
+*.sln
+*.vcxproj
+*.vcxproj.*
+*.suo
+*.user
+*.db
+*.opendb
+*.ipch
+.vs/
+.vscode/
+
+# VS build folders
+x64/
+Debug/
+Release/
+CodingSample/
+
+# CMake
+build/
+out/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CMakeSettings.json
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
